@@ -1,0 +1,45 @@
+# Setting environment variables for Terraform
+# Packet project auth
+project_id="a1b2c3d4-e5f6-78ab-cd12-efb4d23c29f2"
+auth_token="YR4LdS3B5zxuSa2ba7WpEXY4gsh4Uqf3"
+
+# Cloudflare
+cf_email="my-cloudflare-email@domain.com"
+cf_api_key="892f8b1f0d0ae4d13bd28cde5beaea22423g3"
+cf_zone_id="1d5b56b5156f0ab6e700f35d76a8fece"
+
+# OpenShift base domain, should match domain made authoritative to Cloudflare
+cluster_basedomain="mydomain.net"
+ocp_cluster_manager_token="mHIp2lc3DzevLuJFhoB7S64tnNWE8ZkQr9RPyswYdjX5MxgbKf1qOUA0GViTCamHIp2lc3DzevLuJFhoB7S64tnNWE8ZkQr9RPyswYdjX5MxgbKf1qOUA0GViTCamHIp2lc3DzevLuJFhoB7S64tnNWE8ZkQr9RPyswYdjX5MxgbKf1qOUA0GViTCamHIp2lc3DzevLuJFhoB7S64tnNWE8ZkQr9RPyswYdjX5MxgbKf1qOUA0GViTCamHIp2lc3DzevLuJFhoB7S64tnNWE8ZkQr9RPyswYdjX5MxgbKf1qOUA0GViTCamHIp2lc3DzevLuJFhoB7S64tnNWE8ZkQr9RPyswYdjX5MxgbKf1qOUA0GViTCamHIp2lc3DzevLuJFhoB7S64tnNWE8ZkQr9RPyswYdjX5MxgbKf1qOUA0GViTCamHIp2lc3DzevLuJFhoB7S64tnNWE8ZkQr9RPyswYdjX5MxgbKf1qOUA0GViTCamHIp2lc3DzevLuJFhoB7S64tnNWE8ZkQr9RPyswYdjX5MxgbKf1qOUA0GViTCamHIp2lc3DzevLuJFhoB7S64tnNWE8ZkQr9RPyswYdjX5MxgbKf1qOUA0GViTCamHIp2lc3DzevLuJFhoB7S64tnNWE8ZkQr9RPyswYdjX5MxgbKf1qOUA0GViTCamHIp2lc3DzevLuJFhoB7S64tnNWE8ZkQr9RPyswYdjX5MxgbKf1qOUA0GViTCamHIp2lc3DzevLuJFhoB7S64tnNWE8ZkQr9RPyswYdjX5MxgbKf1qOUA0GViTCamHIp2lc3DzevLuJFhoB7S64tnNWE8ZkQr9RPyswYdjX5MxgbKf1qOUA0GViTCamHIp2lc3DzevLuJFhoB7S64tnNWE8ZkQr9RPyswYdjX5MxgbKf1qOUA0GViTCamHIp2lc3DzevLuJFhoB7S64tnNWE8ZkQr9RPyswYdjX5MxgbKf1qOUA0GViTCamHIp2lc3DzevLuJFhoB7S64tnNWE8ZkQr9RPyswYdjX5MxgbKf1qOUA0GViTCamHIp2lc3DzevLuJFhoB7S64tnNWE8ZkQr9RPyswYdjX5MxgbKf1qOUA0GViTCamHIp2lc3DzevLuJFhoB7S64tnNWE8ZkQr9RPyswYdjX5MxgbKf1qOUA0GViTCamHIp2lc3DzevLuJFhoB7S64tnNWE8ZkQr9RPyswYdjX5MxgbKf1qOUA0GViTCamHIp2lc3DzevLuJFhoB7S64tnNWE8ZkQr9RPyswYdjX5MxgbKf1qOUA0GViTCamHIp2lc3DzevLuJFhoB7S64tnNWE8ZkQr9RPyswYdjX5MxgbKf1qOUA0GViTCamHIp2lc3DzevLuJFhoB7S64tnNWE8ZkQr9RPyswYdjX5MxgbKf1qOUA0GViTCamHIp2lc3DzevLuJFhoB7S64tnNWE8ZkQr9RPyswYdjX5MxgbKf1qOUA0GViTCamHIp2lc3DzevLuJFhoB7S64tnNWE8ZkQr9RPyswYdjX5MxgbKf1qOUA0GViTCamHIp2lc3DzevLu"
+
+# Packet personal or project keys
+# https://www.packet.com/developers/docs/servers/key-features/ssh-keys/
+ssh_private_key_path = "/path/to/.ssh/id_ecdsa"
+ssh_public_key_path = "/path/to/.ssh/id_ecdsa.pub"
+
+facility = "sv15"
+plan_bastion = "c3.small.x86"
+plan_master = "c3.small.x86"
+plan_compute = "c3.small.x86"
+
+# Recommended to stick with CentOS for now, Red Hat bastion coming soon
+bastion_operating_system = "centos_8"
+#bastion_operating_system = "rhel_7"
+
+count_master = "3"
+
+count_compute = "2"
+
+# subdomain to be prepended to cluster_basedomain above to achieve cluster domain name
+# for example: lab01.mydomain.net
+cluster_name = "lab01"
+
+ocp_version = "4.5"
+
+ocp_version_zstream = "6"
+
+ocp_storage_nfs_enable  = true
+
+ocp_storage_ocs_enable  = false
+
+ocp_virtualization_enable  = false
