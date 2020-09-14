@@ -57,12 +57,52 @@ locals {
   EOT
   expanded_masters_nfs = <<-EOT
     %{ for i in range(length(var.master_ips)) ~}
-/mnt/nfs/ocp  ${element(var.master_ips, i)}(rw,no_root_squash)
+/mnt/nfs/ocp  ${element(var.master_ips, i)}(rw,async,no_subtree_check,no_root_squash)
     %{ endfor ~}
   EOT
   expanded_compute_nfs = <<-EOT
     %{ for i in range(length(var.worker_ips)) ~}
-/mnt/nfs/ocp  ${element(var.worker_ips, i)}(rw,no_root_squash)
+/mnt/nfs/ocp  ${element(var.worker_ips, i)}(rw,async,no_subtree_check,no_root_squash)
+    %{ endfor ~}
+  EOT
+  expanded_masters_nfs_store01 = <<-EOT
+    %{ for i in range(length(var.master_ips)) ~}
+/mnt/nfs/store01  ${element(var.master_ips, i)}(rw,async,no_subtree_check,no_root_squash)
+    %{ endfor ~}
+  EOT
+  expanded_compute_nfs_store01 = <<-EOT
+    %{ for i in range(length(var.worker_ips)) ~}
+/mnt/nfs/store01  ${element(var.worker_ips, i)}(rw,async,no_subtree_check,no_root_squash)
+    %{ endfor ~}
+  EOT
+  expanded_masters_nfs_store02 = <<-EOT
+    %{ for i in range(length(var.master_ips)) ~}
+/mnt/nfs/store02  ${element(var.master_ips, i)}(rw,async,no_subtree_check,no_root_squash)
+    %{ endfor ~}
+  EOT
+  expanded_compute_nfs_store02 = <<-EOT
+    %{ for i in range(length(var.worker_ips)) ~}
+/mnt/nfs/store02  ${element(var.worker_ips, i)}(rw,async,no_subtree_check,no_root_squash)
+    %{ endfor ~}
+  EOT
+  expanded_masters_nfs_store03 = <<-EOT
+    %{ for i in range(length(var.master_ips)) ~}
+/mnt/nfs/store03  ${element(var.master_ips, i)}(rw,async,no_subtree_check,no_root_squash)
+    %{ endfor ~}
+  EOT
+  expanded_compute_nfs_store03 = <<-EOT
+    %{ for i in range(length(var.worker_ips)) ~}
+/mnt/nfs/store03  ${element(var.worker_ips, i)}(rw,async,no_subtree_check,no_root_squash)
+    %{ endfor ~}
+  EOT
+  expanded_masters_nfs_store04 = <<-EOT
+    %{ for i in range(length(var.master_ips)) ~}
+/mnt/nfs/store04  ${element(var.master_ips, i)}(rw,async,no_subtree_check,no_root_squash)
+    %{ endfor ~}
+  EOT
+  expanded_compute_nfs_store04 = <<-EOT
+    %{ for i in range(length(var.worker_ips)) ~}
+/mnt/nfs/store04  ${element(var.worker_ips, i)}(rw,async,no_subtree_check,no_root_squash)
     %{ endfor ~}
   EOT
 
@@ -70,6 +110,7 @@ locals {
   expanded_bootstrap_mcs    = length(var.bootstrap_ip) >= 1 ? "server bootstrap-0 ${element(var.bootstrap_ip, 0)}:22623 check" : ""
 
   haproxy_cfg_file      = "/etc/haproxy/haproxy.cfg"
+  dhcpd_conf_file        = "/etc/dhcp/dhcpd.conf"
 }
 
 data "template_file" "haproxy_lb" {
@@ -84,6 +125,11 @@ data "template_file" "haproxy_lb" {
     expanded_bootstrap_api = local.expanded_bootstrap_api
     expanded_bootstrap_mcs = local.expanded_bootstrap_mcs
   }
+}
+
+data "template_file" "dhcpd_conf" {
+    depends_on = [ var.depends ]
+    template   = file("${path.module}/templates/dhcpd.conf.tpl")
 }
 
 resource "null_resource" "reconfig_lb" {
@@ -113,6 +159,22 @@ resource "null_resource" "reconfig_lb" {
     ]
   }
 
+}
+
+resource "null_resource" "reconfig_dhcpd" {
+
+  depends_on = [ var.depends ]
+
+  provisioner "file" {
+
+    connection {
+      private_key = file(var.ssh_private_key_path)
+      host        = var.bastion_ip
+    }
+
+    content       = data.template_file.dhcpd_conf.rendered
+    destination   = local.dhcpd_conf_file
+  }
 }
 
 resource "null_resource" "check_port" {
@@ -154,8 +216,8 @@ resource "null_resource" "ocp_installer_wait_for_bootstrap" {
     }
 
     inline = [<<EOT
-      while [ ! -f /tmp/artifacts/install/auth/kubeconfig ]; do sleep 2; done; 
-      /tmp/artifacts/openshift-install --dir /tmp/artifacts/install wait-for bootstrap-complete;
+      while [ ! -f /root/ocp4upi/artifacts/install/auth/kubeconfig ]; do sleep 2; done; 
+      /root/ocp4upi/artifacts/openshift-install --dir /root/ocp4upi/artifacts/install wait-for bootstrap-complete;
     EOT
     ]
   }
@@ -165,6 +227,14 @@ data "template_file" "nfs_exports" {
     template = <<-EOT
     ${local.expanded_masters_nfs}
     ${local.expanded_compute_nfs}
+    ${local.expanded_masters_nfs_store01}
+    ${local.expanded_compute_nfs_store01}
+    ${local.expanded_masters_nfs_store02}
+    ${local.expanded_compute_nfs_store02}
+    ${local.expanded_masters_nfs_store03}
+    ${local.expanded_compute_nfs_store03}
+    ${local.expanded_masters_nfs_store04}
+    ${local.expanded_compute_nfs_store04}
     EOT
 }
 
@@ -226,10 +296,10 @@ resource "null_resource" "ocp_installer_wait_for_completion" {
     }
 
     inline = [<<EOT
-      while [ ! -f /tmp/artifacts/install/auth/kubeconfig ]; do sleep 2; done;
-      /tmp/artifacts/openshift-install --dir /tmp/artifacts/install wait-for install-complete;
+      while [ ! -f /root/ocp4upi/artifacts/install/auth/kubeconfig ]; do sleep 2; done;
+      /root/ocp4upi/artifacts/openshift-install --dir /root/ocp4upi/artifacts/install wait-for install-complete;
       mkdir -p ~/.kube || true;
-      cp /tmp/artifacts/install/auth/kubeconfig ~/.kube/config || true;
+      cp /root/ocp4upi/artifacts/install/auth/kubeconfig ~/.kube/config || true;
     EOT
     ]
   }
@@ -239,21 +309,28 @@ resource "null_resource" "ocp_approve_pending_csrs" {
 
   depends_on = [ null_resource.ocp_installer_wait_for_bootstrap, null_resource.ocp_bootstrap_cleanup ]
 
-  provisioner "remote-exec" {
+  provisioner "file" {
+
     connection {
       private_key = file(var.ssh_private_key_path)
       host        = var.bastion_ip
     }
-    inline = [<<EOT
-      while [ ! -f /tmp/artifacts/install/auth/kubeconfig ]; do sleep 2; done;
-      sleep 300;
-      export KUBECONFIG="/tmp/artifacts/install/auth/kubeconfig";
-      export oc=/tmp/artifacts/oc
-      ($oc get csr -oname | xargs $oc adm certificate approve) || true;
-      sleep 180;
-      ($oc get csr -oname | xargs $oc adm certificate approve) || true;
-    EOT
+
+    source       = "${path.module}/templates/ocp-approve-pending-csrs.sh"
+    destination  = "/root/ocp4upi/artifacts/ocp-approve-pending-csrs.sh"
+  }
+
+  provisioner "remote-exec" {
+
+    connection {
+      private_key = file(var.ssh_private_key_path)
+      host        = var.bastion_ip
+    }
+    inline        = [
+      "chmod +x /root/ocp4upi/artifacts/ocp-approve-pending-csrs.sh",
+      "/root/ocp4upi/artifacts/ocp-approve-pending-csrs.sh"
     ]
+  
   }
 }
 
@@ -270,25 +347,54 @@ resource "null_resource" "ocp_nfs_provisioner" {
     }
 
     source       = "${path.module}/templates/nfs-provisioner.sh"
-    destination  = "/tmp/artifacts/nfs-provisioner.sh"
+    destination  = "/root/ocp4upi/artifacts/nfs-provisioner.sh"
   }
 
   provisioner "remote-exec" {
+    
     connection {
       private_key = file(var.ssh_private_key_path)
       host        = var.bastion_ip
     }
     inline        = [
-      "chmod +x /tmp/artifacts/nfs-provisioner.sh",
-      "/tmp/artifacts/nfs-provisioner.sh /tmp ${var.bastion_ip}"
+      "chmod +x /root/ocp4upi/artifacts/nfs-provisioner.sh",
+      "/root/ocp4upi/artifacts/nfs-provisioner.sh /root/ocp4upi ${var.bastion_ip}"
     ]
   
   }
 }
 
+resource "null_resource" "ocp_internal_net" {
+
+  depends_on = [ null_resource.ocp_nfs_provisioner ]
+
+  provisioner "file" {
+
+    connection {
+      private_key = file(var.ssh_private_key_path)
+      host        = var.bastion_ip
+    }
+
+    source       = "${path.module}/templates/internal-net.sh"
+    destination  = "/root/ocp4upi/artifacts/internal-net.sh"
+  }
+
+  provisioner "remote-exec" {
+    
+    connection {
+      private_key = file(var.ssh_private_key_path)
+      host        = var.bastion_ip
+    }
+    inline        = [
+      "chmod +x /root/ocp4upi/artifacts/internal-net.sh",
+      "/root/ocp4upi/artifacts/internal-net.sh"
+    ]
+  
+  }
+}
 
 output "finished" {
-    depends_on = [null_resource.ocp_install_wait_for_bootstrap, null_resource.ocp_bootstrap_cleanup, null_resource.ocp_installer_wait_for_completion ]
+    depends_on = [null_resource.ocp_installer_wait_for_bootstrap, null_resource.ocp_bootstrap_cleanup, null_resource.ocp_installer_wait_for_completion, null_resource.ocp_internal_net ]
     value      = "OpenShift install wait and cleanup finished"
 }
 

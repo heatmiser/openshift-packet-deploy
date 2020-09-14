@@ -8,7 +8,7 @@ Adding worker nodes to your cluster on Packet is trivial since the provisioning 
 
 If your cluster has been deployed/running for *less than 24 hours* you can scale compute by incrementing the `count_compute` value in `vars.tf` or your sourced environment including `TF_VAR_count_compute` and rerunning `terraform apply`. For example, if you initially deploy 3 worker compute nodes by setting `TF_VAR_count_compute=3` and you'd like to scale to 5 nodes, you would simply re-execute your terraform apply (*NOTE: this example does NOT persist the count value for your compute nodes. You should permanently set `count_compute` or `TF_VAR_count_compute`*:
 ```bash
-export KUBECONFIG="/tmp/artifacts/install/auth/kubeconfig"      ## Update to kubeconfig location
+export KUBECONFIG="/root/ocp4upi/artifacts/install/auth/kubeconfig"      ## Update to kubeconfig location
 
 # Scale-up -- NOTE: You should permanently set `count_compute` or `TF_VAR_count_compute`
 terraform apply -var="count_compute=5" -var="count_bootstrap=0" --auto-approve
@@ -20,7 +20,7 @@ oc get csr -oname | xargs oc adm certificate approve
 
 If your cluster has been deploymed/running for *24 hours or more* you must update your bastion-hosted `worker.ign` file before scaling:
 ```bash
-export KUBECONFIG="/tmp/artifacts/install/auth/kubeconfig"      ## Update to kubeconfig location
+export KUBECONFIG="/root/ocp4upi/artifacts/install/auth/kubeconfig"      ## Update to kubeconfig location
 source ~/.packet-vars
 
 # Pre-scaling
@@ -47,7 +47,7 @@ bash extras/1_configure_ingresscerts.sh
 
 Optionally customize the parameters/variables before execution:
 ```bash
-export KUBECONFIG="/tmp/artifacts/install/auth/kubeconfig"      ## Update to kubeconfig location
+export KUBECONFIG="/root/ocp4upi/artifacts/install/auth/kubeconfig"      ## Update to kubeconfig location
 
 export CF_Key=$TF_VAR_cf_api_key                                ## Update to appropriate Cloudflare key (or other DNS provider cred)
 export CF_Email=$TF_VAR_cf_email                                ## Update to appropriate Cloudflare email (or other DNS provider cred)

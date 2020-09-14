@@ -2,7 +2,11 @@
 
 wget -O /tmp/jq https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
 chmod +x /tmp/jq
-cp /tmp/jq /usr/bin
+cp /tmp/jq /usr/local/bin
+
+wget -O /tmp/yq https://github.com/mikefarah/yq/releases/download/3.3.2/yq_linux_amd64
+chmod +x /tmp/yq
+cp /tmp/yq /usr/local/bin
 
 cat <<EOT >> /etc/yum.repos.d/nginx.repo
 [nginx]
@@ -12,7 +16,7 @@ gpgcheck=0
 enabled=1
 EOT
 
-yum install -y nginx nfs-utils haproxy
+yum install -y nginx nfs-utils haproxy git
 
 # Update nginx configs for file hosting
 sed -i "s|location / {|location / {\n             autoindex on;|g" /etc/nginx/nginx.conf

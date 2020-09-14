@@ -37,7 +37,7 @@ resource "null_resource" "ocp_installer" {
 
     inline = [
       "chmod +x /tmp/get-ocp-installer.sh",
-      "/tmp/get-ocp-installer.sh /tmp ${var.ocp_version}"
+      "/tmp/get-ocp-installer.sh /root/ocp4upi ${var.ocp_version}"
     ]
   }
 }
@@ -65,7 +65,7 @@ resource "null_resource" "ocp_pullsecret" {
 
     inline = [
       "chmod +x /tmp/get-pull-secret.sh",
-      "/tmp/get-pull-secret.sh ${var.ocp_api_token} > /tmp/artifacts/pullsecret.json"
+      "/tmp/get-pull-secret.sh ${var.ocp_api_token} > /root/ocp4upi/artifacts/pullsecret.json"
     ]
   }
 }
@@ -93,7 +93,7 @@ resource "null_resource" "ocp_install_config" {
     }
 
     content       = data.template_file.installer_config.rendered
-    destination  = "/tmp/artifacts/install/install-config.yaml"
+    destination  = "/root/ocp4upi/artifacts/install/install-config.yaml"
   }
 
   provisioner "remote-exec" {
@@ -103,7 +103,7 @@ resource "null_resource" "ocp_install_config" {
     }
 
     inline = [
-      "echo -e \"\npullSecret: '$(cat /tmp/artifacts/pullsecret.json)'\" >> /tmp/artifacts/install/install-config.yaml"
+      "echo -e \"\npullSecret: '$(cat /root/ocp4upi/artifacts/pullsecret.json)'\" >> /root/ocp4upi/artifacts/install/install-config.yaml"
     ]
   }
 
@@ -122,11 +122,11 @@ resource "null_resource" "ocp_install_manifests" {
       "timedatectl set-ntp no",
       "new_time=`date '+%Y-%m-%d %H:%M:%S' -d '-8 hours'`",
       "timedatectl set-time \"$${new_time}\"",
-      "cp /tmp/artifacts/install/install-config.yaml /tmp/artifacts/install/install-config.yaml.backup",
-      "/tmp/artifacts/openshift-install create manifests --dir /tmp/artifacts/install",
-      "[[ ${var.count_compute} -ge 2 ]] && sed -i 's/mastersSchedulable: true/mastersSchedulable: false/g' /tmp/artifacts/install/manifests/cluster-scheduler-02-config.yml",
-      "/tmp/artifacts/openshift-install create ignition-configs --dir /tmp/artifacts/install",
-      "cp /tmp/artifacts/install/*.ign /usr/share/nginx/html/",
+      "cp /root/ocp4upi/artifacts/install/install-config.yaml /root/ocp4upi/artifacts/install/install-config.yaml.backup",
+      "/root/ocp4upi/artifacts/openshift-install create manifests --dir /root/ocp4upi/artifacts/install",
+      "[[ ${var.count_compute} -ge 2 ]] && sed -i 's/mastersSchedulable: true/mastersSchedulable: false/g' /root/ocp4upi/artifacts/install/manifests/cluster-scheduler-02-config.yml",
+      "/root/ocp4upi/artifacts/openshift-install create ignition-configs --dir /root/ocp4upi/artifacts/install",
+      "cp /root/ocp4upi/artifacts/install/*.ign /usr/share/nginx/html/",
       "chmod -R 0755 /usr/share/nginx/html/",
       "timedatectl set-ntp yes",
       "chronyc -a 'burst 4/4'; sleep 10; chronyc -a makestep"

@@ -10,6 +10,7 @@ module "openshift_bootstrap" {
   project_id           = var.project_id
   cf_zone_id           = var.cf_zone_id
   bastion_ip           = module.bastion.lb_ip
+  vlan_ocp             = module.bastion.ocp_vlan
   node_type            = "bootstrap"
   depends              = [module.prepare_openshift.finished]
 }
@@ -36,6 +37,7 @@ module "openshift_masters" {
   project_id           = var.project_id
   cf_zone_id           = var.cf_zone_id
   bastion_ip           = module.bastion.lb_ip
+  vlan_ocp             = module.bastion.ocp_vlan
   node_type            = "master"
   depends              = [module.prepare_openshift.finished]
 }
@@ -62,6 +64,7 @@ module "openshift_workers" {
   project_id           = var.project_id
   cf_zone_id           = var.cf_zone_id
   bastion_ip           = module.bastion.lb_ip
+  vlan_ocp             = module.bastion.ocp_vlan
   node_type            = "worker"
   depends              = [module.prepare_openshift.finished]
 }

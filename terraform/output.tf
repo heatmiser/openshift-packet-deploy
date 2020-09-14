@@ -3,7 +3,7 @@ resource "null_resource" "get_kubeconfig" {
   depends_on = [module.prepare_openshift.finished]
 
   provisioner "local-exec" {
-    command = "mkdir -p ${path.root}/auth; scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ${var.ssh_private_key_path} root@${module.bastion.lb_ip}:/tmp/artifacts/install/auth/* ${path.root}/auth/"
+    command = "mkdir -p ${path.root}/auth; scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ${var.ssh_private_key_path} root@${module.bastion.lb_ip}:/root/ocp4upi/artifacts/install/auth/* ${path.root}/auth/"
   }
 }
 
@@ -26,7 +26,7 @@ output "Information" {
   Password: ${data.external.kubeadmin_password.result.password}
 
   To use the CLI (on bastion):
-    export KUBECONFIG="/tmp/artifacts/install/auth/kubeconfig"
+    export KUBECONFIG="/root/ocp4upi/artifacts/install/auth/kubeconfig"
   
   To use the CLI (locally):
     export KUBECONFIG="${abspath(path.root)}/auth/kubeconfig"

@@ -7,6 +7,7 @@ variable "ssh_private_key_path" {}
 variable "project_id" {}
 variable "cf_zone_id" {}
 variable "bastion_ip" {}
+variable "vlan_ocp" {}
 variable "node_type" {}
 variable "depends" {
   type    = any
@@ -24,7 +25,19 @@ resource "packet_device" "node" {
   count              = var.node_count
   billing_cycle    = "hourly"
   project_id       = var.project_id
+}
 
+resource "packet_device_network_type" "node" {
+  device_id = packet_device.node[count.index].id
+  type      = "hybrid"
+  count     = var.node_count
+}
+
+resource "packet_port_vlan_attachment" "node" {
+  device_id = packet_device_network_type.node[count.index].id
+  port_name = "eth1"
+  vlan_vnid = var.vlan_ocp
+  count     = var.node_count
 }
 
 output "finished" {

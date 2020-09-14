@@ -60,6 +60,12 @@ locals {
   
 }
 
+resource "packet_vlan" "ocp" {
+  description = "VLAN in Silicon Valley, USA"
+  facility    = var.facility
+  project_id  = var.project_id
+}
+
 resource "packet_device" "lb" {
     hostname = "lb-0.${var.cluster_name}.${var.cluster_basedomain}" 
     plan = var.plan
@@ -68,7 +74,17 @@ resource "packet_device" "lb" {
     billing_cycle = var.billing_cycle
     project_id = var.project_id
     user_data = data.template_file.user_data.rendered
+}
 
+resource "packet_device_network_type" "lb" {
+  device_id = packet_device.lb.id
+  type      = "hybrid"
+}
+
+resource "packet_port_vlan_attachment" "lb" {
+  device_id = packet_device_network_type.lb.id
+  port_name = "eth1"
+  vlan_vnid = packet_vlan.ocp.vxlan
 }
 
 resource "null_resource" "dircheck" {
@@ -171,7 +187,7 @@ resource "null_resource" "ignition_append_files" {
 }
 
 output "finished" {
-    depends_on = [null_resource.file_uploads, null_resource.ipxe_files]
+    depends_on = [null_resource.ocp_install_ignition, null_resource.ipxe_files]
     value      = "Loadbalancer provisioning finished."
 }
 

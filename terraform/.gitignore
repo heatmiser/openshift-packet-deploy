@@ -1,4 +1,5 @@
 .terraform*
+00*.tfvars
 /override.tf
 /terraform.tfvars
 terraform.tfstate*

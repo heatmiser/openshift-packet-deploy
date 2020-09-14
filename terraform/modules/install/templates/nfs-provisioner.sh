@@ -37,3 +37,10 @@ $oc create -f $RDIR/artifacts/install/nfsp-deployment.yaml
 
 # Set class as cluster-wide default
 $oc patch storageclass managed-nfs-storage -p '{"metadata": {"annotations": {"storageclass.kubernetes.io/is-default-class": "true"}}}'
+
+# Let NFS storage configuration settle
+sleep 60
+
+# Set Image Registry to use NFS storage
+$oc patch configs.imageregistry.operator.openshift.io/cluster --type merge -p '{"spec":{"managementState":"Managed"}}'
+$oc patch configs.imageregistry.operator.openshift.io/cluster --type merge -p '{"spec": {"storage": {"pvc": {"claim": ""}}}}'

@@ -43,6 +43,11 @@ variable "facility" {
   default     = "dfw2"
 }
 
+variable "plan_bastion" {
+  description = "Plan for Bastion Nodes"
+  default     = "c3.medium.x86"
+}
+
 variable "plan_master" {
   description = "Plan for Master Nodes"
   default     = "c3.medium.x86"
@@ -69,7 +74,7 @@ variable "count_compute" {
 }
 
 variable "cluster_name" {
-  default = "jr"
+  default = "lab01"
   description = "Cluster name label"
 }
 
