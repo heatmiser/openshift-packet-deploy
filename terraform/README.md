@@ -51,7 +51,9 @@ cd openshift-packet-deploy/terraform
   
 4. For variables, you have two options:
 - export variables in the currently active shell
+
 or
+
 - create a tfvars file that contains all of the requisite values
 
   1) If you choose to export variables in the currently active shell:
@@ -79,7 +81,7 @@ or
      ```bash
      cp 00cnvlab.tfvars.example 00cnvlab.tfvars
      ```
-  ...and then edit 00cnvlab.tfvars with all of the correct user, authentication, project and settings
+  ...and then edit `00cnvlab.tfvars` with all of the correct user, authentication, project and settings
 
 5. Initialize and validate terraform:
      ```bash
