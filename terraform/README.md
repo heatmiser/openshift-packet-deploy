@@ -74,8 +74,8 @@ or
 
   The base of the project directory contains a couple of example tfvars files:
 
-- 00cnvlab.tfvars.example - good configuration for OpenShift virtualization work
-- 00small.tfvars.example - minimal deployment, good for testing deployment automation
+- `00cnvlab.tfvars.example` - good configuration for OpenShift virtualization work
+- `00small.tfvars.example` - minimal deployment, good for testing deployment automation
 
   Copy one of the example files to a tfvars filename, ie:
      ```bash
