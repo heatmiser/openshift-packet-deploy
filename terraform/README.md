@@ -50,8 +50,9 @@ cd openshift-packet-deploy/terraform
 3. [Obtain an OpenShift Cluster Manager API Token](https://cloud.redhat.com/openshift/token) for pullSecret generation.
   
 4. For variables, you have two options:
-  1) export variables in the currently active shell
-  2) create a tfvars file that contains all of the requisite values
+- export variables in the currently active shell
+or
+- create a tfvars file that contains all of the requisite values
 
   1) If you choose to export variables in the currently active shell:
     Configure TF_VARs applicable to your Packet project, Cloudflare zone, and OpenShift API Token:
