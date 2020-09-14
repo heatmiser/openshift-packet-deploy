@@ -95,7 +95,7 @@ or
      ```
     ...followed by applying the plan:
     ```bash
-     terraform apply "cnvlab-2020-09-14.0217.tfplan"   <== tfplan file name time/date specific
+     terraform apply "cnvlab-2020-09-14.0217.tfplan"  #<== tfplan file name time/date specific
      ```
     
     All resources will be created and installation launched. This process takes between 30 and 50 minutes to complete: 
