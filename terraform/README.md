@@ -105,7 +105,7 @@ or
      terraform plan -out=rm-bootstrap-$(date +%Y-%m-%d.%H%M).tfplan -var-file="00cnvlab.tfvars" -var="count_bootstrap=0"
      terraform apply "rm-bootstrap-2020-09-14.0309.tfplan"
      ```
-     If you need to obtain any of the output values of the deployment at a later time, for example,your `kubeadmin` credentials:
+     If you need to obtain any of the output values of the deployment at a later time, for example, your `kubeadmin` credentials:
      ```
      terraform output
      ```
