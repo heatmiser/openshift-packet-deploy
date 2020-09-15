@@ -5,7 +5,7 @@ module "bastion" {
   auth_token           = var.auth_token
   project_id           = var.project_id
   facility             = var.facility
-  plan                 = var.plan_master
+  plan                 = var.plan_bastion
   operating_system     = var.bastion_operating_system
   ssh_private_key_path = var.ssh_private_key_path
   cluster_name         = var.cluster_name
